@@ -1,14 +1,20 @@
 import { describe, it } from 'vitest'
 import { tokenize } from './lexer'
-import { readFileSync } from 'fs'
-import { join } from 'path'
+import dedent from 'ts-dedent'
 
-const normal = readFileSync(join(__dirname, '../datas/normal.api'), {
-  encoding: 'utf8',
-})
 describe('api lexer', () => {
-  it('normal', () => {
-    const x = tokenize(normal)
-    console.log('debugger 🐛 x', x)
+  it('syntax = "v1"', () => {
+    tokenize(`syntax = "v1"`)
+  })
+  it('info', () => {
+    tokenize(
+      dedent`
+        info (
+          title:  "vivix_tiptap_proxy"
+          desc:   "vivix_tiptap_proxy"
+          author: "luis"
+        )
+      `
+    )
   })
 })
