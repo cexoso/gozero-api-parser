@@ -186,4 +186,45 @@ describe('service definition', () => {
       name: 'proxy_api',
     })
   })
+  it('service definition case3', () => {
+    const x = parse(
+      dedent`
+        @server (
+          group:      "user"
+          middleware: JwtAgentMiddleware
+
+        )
+        service server_proxy_api {
+          @handler RegisterHandler
+          post /user/register returns (RegisterRes)
+        }
+      `
+    )
+
+    expect(x).deep.eq({
+      decorator: [
+        {
+          args: {
+            group: 'user',
+          },
+          name: 'server',
+        },
+      ],
+      methods: [
+        {
+          decorator: {
+            args: 'RegisterHandler',
+            name: 'handler',
+          },
+          method: 'POST',
+          request: undefined,
+          response: {
+            typeName: 'RegisterRes',
+          },
+          url: '/user/register',
+        },
+      ],
+      name: 'server_proxy_api',
+    })
+  })
 })

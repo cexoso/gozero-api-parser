@@ -140,7 +140,9 @@ export class ApiParser extends CstParser {
       })
       $.CONSUME(Identifier)
       $.CONSUME(UrlPath)
-      $.SUBRULE($['Request'])
+      $.OPTION2(() => {
+        $.SUBRULE($['Request'])
+      })
       $.CONSUME(ReturnsKeyword)
       $.SUBRULE($['Response'])
     })
