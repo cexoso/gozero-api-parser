@@ -1,0 +1,129 @@
+syntax = "v1"
+
+info (
+	title:  "server_proxy"
+	desc:   "server_proxy"
+	author: "jie"
+)
+
+type (
+	UserInfo {
+		id              int64  `json:"id"`
+		nickname        string `json:"nickname"`
+		email           string `json:"email"`
+		profileImageUrl string `json:"profileImageUrl"`
+		loginType       int    `json:"loginType"`
+	}
+)
+
+type (
+	GoogleLoginReq {
+		code string `json:"code"`
+	}
+	GoogleLoginRes {
+		token      string   `json:"token"`
+		userInfo   UserInfo `json:"userInfo"`
+		isRegister bool     `json:"isRegister"`
+	}
+)
+
+type (
+	AppleLoginReq {
+		code     string `json:"code"`
+		nickname string `json:"nickname"`
+		email    string `json:"email"`
+	}
+	AppleLoginRes {
+		token      string   `json:"token"`
+		userInfo   UserInfo `json:"userInfo"`
+		isRegister bool     `json:"isRegister"`
+	}
+)
+
+type (
+	RegisterRes {
+		success bool `json:"success"`
+	}
+)
+
+type (
+	GetUploadCredentialsReq {
+		fileName string `json:"fileName"`
+	}
+	GetUploadCredentialsRes {
+		dir                  string `json:"dir"`
+		host                 string `json:"host"`
+		policy               string `json:"policy"`
+		securityToken        string `json:"securityToken"`
+		signature            string `json:"signature"`
+		xOssCredentials      string `json:"xOssCredentials"`
+		xOssDate             string `json:"xOssDate"`
+		xOssSignatureVersion string `json:"xOssSignatureVersion"`
+		callback             string `json:"callback"`
+		uploadId             string `json:"uploadId"`
+	}
+)
+
+type (
+	OssCallbackReq {
+		bucket   string `json:"bucket"` // OSS存储桶名称
+		object   string `json:"object"` // 文件路径
+		etag     string `json:"etag"` // 文件指纹
+		size     int64  `json:"size"` // 文件大小（字节）
+		mimeType string `json:"mimeType"` // 文件类型
+		uploadId string `json:"uploadId"` // 自定义参数：上传ID
+	}
+	OssCallbackRes  {}
+)
+
+type (
+	GenerateVideoReq {
+		uploadId string `json:"uploadId"`
+	}
+	GenerateVideoRes {
+		videoStream []byte `json:"videoStream"`
+		generateId  int64  `json:"generateId"`
+		videoUrl    string `json:"videoUrl"`
+	}
+)
+
+@server (
+	group: "user"
+)
+service server_proxy_api {
+	@handler GoogleLoginHandler
+	post /user/googleLogin (GoogleLoginReq) returns (GoogleLoginRes)
+
+	@handler AppleLoginHandler
+	post /user/appleLogin (AppleLoginReq) returns (AppleLoginRes)
+}
+
+@server (
+	group:      "user"
+	middleware: JwtAgentMiddleware
+)
+service server_proxy_api {
+	@handler RegisterHandler
+	post /user/register returns (RegisterRes)
+}
+
+@server (
+	group:      "oss"
+	middleware: OssCallbackMiddleware
+)
+service server_proxy_api {
+	@handler OssCallbackHandler
+	post /oss/callback (OssCallbackReq) returns (OssCallbackRes)
+}
+
+@server (
+	group:      "video"
+	middleware: JwtAgentMiddleware
+)
+service server_proxy_api {
+	@handler GetUploadCredentialsHandler
+	post /video/getUploadCredentials (GetUploadCredentialsReq) returns (GetUploadCredentialsRes)
+
+	@handler GenerateVideoHandler
+	post /video/generateVideo (GenerateVideoReq) returns (GenerateVideoRes)
+}
