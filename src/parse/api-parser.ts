@@ -17,6 +17,8 @@ import {
   TypeKeyword,
   allTokens,
   RawString,
+  LBrackets,
+  RBrackets,
 } from '../tokens'
 import { tokenize } from '../lexer/lexer'
 
@@ -67,9 +69,18 @@ export class ApiParser extends CstParser {
       })
       $.CONSUME(RParen)
     })
+
+    $.RULE('fieldType', () => {
+      $.OPTION(() => {
+        $.CONSUME(LBrackets)
+        $.CONSUME(RBrackets)
+      })
+      $.CONSUME(Identifier)
+    })
+
     $.RULE('fieldDefinition', () => {
       $.CONSUME(Identifier)
-      $.CONSUME2(Identifier)
+      $.SUBRULE($['fieldType'])
       $.CONSUME2(RawString)
     })
 
@@ -204,9 +215,12 @@ class ApiToAstVisitor extends ApiVisitor {
     return { [key]: value }
   }
   fieldDefinition(ctx: any) {
+    const typeResult = this.visit(ctx.fieldType)
+    const { typeName, isArray } = typeResult
     return {
       name: ctx.Identifier[0].image,
-      type: ctx.Identifier[1].image,
+      type: typeName,
+      isArray: isArray,
       remark: ctx.RawString[0].image.slice(1, -1),
     }
   }
@@ -266,6 +280,14 @@ class ApiToAstVisitor extends ApiVisitor {
     const typeName = ctx.Identifier[0].image
     return {
       typeName,
+    }
+  }
+  fieldType(ctx: any) {
+    const typeName = ctx.Identifier[0].image
+    const isArray = Boolean(ctx.LBrackets)
+    return {
+      typeName,
+      isArray,
     }
   }
 }

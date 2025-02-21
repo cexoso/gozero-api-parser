@@ -25,6 +25,8 @@ export const Colon = createToken({ name: 'Colon', pattern: /:/ })
 
 export const LCurly = createToken({ name: 'LCurly', pattern: /{/ })
 export const RCurly = createToken({ name: 'RCurly', pattern: /}/ })
+export const LBrackets = createToken({ name: 'LBrackets', pattern: /\[/ })
+export const RBrackets = createToken({ name: 'RBrackets', pattern: /]/ })
 // 新增 RawString token 来匹配原始字符串
 export const RawString = createToken({
   name: 'RawString',
@@ -70,6 +72,8 @@ export const allTokens = [
   RParen,
   Colon,
   LCurly,
+  LBrackets,
+  RBrackets,
   RCurly,
   RawString,
   MultiLineComment,

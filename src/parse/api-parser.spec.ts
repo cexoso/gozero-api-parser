@@ -28,7 +28,7 @@ describe('api lexer', () => {
       dedent`
         type (
           UserInfo {
-            id              int64  \`json:"id"\`
+            id              []int64  \`json:"id"\`
             nickname        string \`json:"nickname"\`
             email           string \`json:"email"\`
             profileImageUrl string \`json:"profileImageUrl"\`
@@ -41,11 +41,11 @@ describe('api lexer', () => {
       messages: {
         UserInfo: {
           fields: [
-            { name: 'id', remark: 'json:"id"', type: 'int64' },
-            { name: 'nickname', remark: 'json:"nickname"', type: 'string' },
-            { name: 'email', remark: 'json:"email"', type: 'string' },
-            { name: 'profileImageUrl', remark: 'json:"profileImageUrl"', type: 'string' },
-            { name: 'loginType', remark: 'json:"loginType"', type: 'int' },
+            { name: 'id', remark: 'json:"id"', type: 'int64', isArray: true },
+            { name: 'nickname', remark: 'json:"nickname"', type: 'string', isArray: false },
+            { name: 'email', remark: 'json:"email"', type: 'string', isArray: false },
+            { name: 'profileImageUrl', remark: 'json:"profileImageUrl"', type: 'string', isArray: false },
+            { name: 'loginType', remark: 'json:"loginType"', type: 'int', isArray: false },
           ],
         },
       },
@@ -71,13 +71,13 @@ describe('api lexer', () => {
     expect(x).deep.eq({
       messages: {
         GoogleLoginReq: {
-          fields: [{ name: 'code', remark: `json:"code"`, type: 'string' }],
+          fields: [{ name: 'code', remark: `json:"code"`, type: 'string', isArray: false }],
         },
         GoogleLoginRes: {
           fields: [
-            { name: 'token', remark: `json:"token"`, type: 'string' },
-            { name: 'userInfo', remark: `json:"userInfo"`, type: 'UserInfo' },
-            { name: 'isRegister', remark: `json:"isRegister"`, type: 'bool' },
+            { name: 'token', remark: `json:"token"`, type: 'string', isArray: false },
+            { name: 'userInfo', remark: `json:"userInfo"`, type: 'UserInfo', isArray: false },
+            { name: 'isRegister', remark: `json:"isRegister"`, type: 'bool', isArray: false },
           ],
         },
         OssCallbackRes: { fields: [] },
