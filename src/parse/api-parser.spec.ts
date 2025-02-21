@@ -96,6 +96,9 @@ describe('service definition', () => {
         service proxy_api {
           @handler GoogleLoginHandler
           post /user/googleLogin (GoogleLoginReq) returns (GoogleLoginRes)
+
+          @handler AppleLoginHandler
+          post /user/appleLogin (AppleLoginReq) returns (AppleLoginRes)
         }
       `
     )
@@ -108,16 +111,36 @@ describe('service definition', () => {
           name: 'server',
         },
       ],
-      methods: {
-        method: 'POST',
-        request: {
-          typeName: 'GoogleLoginReq',
+      methods: [
+        {
+          method: 'POST',
+          request: {
+            typeName: 'GoogleLoginReq',
+          },
+          response: {
+            typeName: 'GoogleLoginRes',
+          },
+          url: '/user/googleLogin',
+          decorator: {
+            args: 'GoogleLoginHandler',
+            name: 'handler',
+          },
         },
-        response: {
-          typeName: 'GoogleLoginRes',
+        {
+          method: 'POST',
+          request: {
+            typeName: 'AppleLoginReq',
+          },
+          response: {
+            typeName: 'AppleLoginRes',
+          },
+          decorator: {
+            args: 'AppleLoginHandler',
+            name: 'handler',
+          },
+          url: '/user/appleLogin',
         },
-        url: '/user/googleLogin',
-      },
+      ],
       name: 'proxy_api',
     })
   })
@@ -144,16 +167,22 @@ describe('service definition', () => {
           name: 'server',
         },
       ],
-      methods: {
-        method: 'POST',
-        request: {
-          typeName: 'OssCallbackReq',
+      methods: [
+        {
+          method: 'POST',
+          decorator: {
+            args: 'OssCallbackHandler',
+            name: 'handler',
+          },
+          request: {
+            typeName: 'OssCallbackReq',
+          },
+          response: {
+            typeName: 'OssCallbackRes',
+          },
+          url: '/oss/callback',
         },
-        response: {
-          typeName: 'OssCallbackRes',
-        },
-        url: '/oss/callback',
-      },
+      ],
       name: 'proxy_api',
     })
   })

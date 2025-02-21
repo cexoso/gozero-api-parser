@@ -155,7 +155,9 @@ export class ApiParser extends CstParser {
       $.CONSUME(Identifier)
       $.CONSUME(LCurly)
       $.OPTION2(() => {
-        $.SUBRULE2($['methodDefinition'])
+        $.MANY2(() => {
+          $.SUBRULE2($['methodDefinition'])
+        })
       })
       $.CONSUME(RCurly)
     })
@@ -241,10 +243,7 @@ class ApiToAstVisitor extends ApiVisitor {
     }
   }
   serviceDefinition(ctx: any) {
-    const methods = ctx.methodDefinition.reduce((acc: Record<string, any>, method: any) => {
-      const m = this.visit(method)
-      return Object.assign(acc, m)
-    }, {})
+    const methods = ctx.methodDefinition?.map((method: any) => this.visit(method)) ?? []
     const name = ctx.Identifier[0].image
     return {
       decorator: ctx.decorator?.map((decorator: any) => this.visit(decorator)) ?? [],
@@ -254,10 +253,12 @@ class ApiToAstVisitor extends ApiVisitor {
   }
   decorator(ctx: any) {
     const name = ctx.Identifier[0].image
+    const arg = ctx.Identifier[1]
+    const args = arg ? arg.image : this.visit(ctx.infoItem)
+
     return {
       name,
-      // TODO: 兼容 @server xxx 形式的装饰器
-      args: this.visit(ctx.infoItem),
+      args,
     }
   }
   methodDefinition(ctx: any) {
@@ -268,6 +269,7 @@ class ApiToAstVisitor extends ApiVisitor {
       url,
       request: this.visit(ctx.Request),
       response: this.visit(ctx.Response),
+      decorator: ctx.decorator ? this.visit(ctx.decorator) : undefined,
     }
   }
   Request(ctx: any) {
