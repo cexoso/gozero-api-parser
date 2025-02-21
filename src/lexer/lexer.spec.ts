@@ -10,9 +10,9 @@ describe('api lexer', () => {
     tokenize(
       dedent`
         info (
-          title:  "vivix_tiptap_proxy"
-          desc:   "vivix_tiptap_proxy"
-          author: "luis"
+          title:  "server_proxy"
+          desc:   "server_proxy"
+          author: "jie"
         )
       `
     )

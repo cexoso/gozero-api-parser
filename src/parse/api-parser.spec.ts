@@ -12,14 +12,14 @@ describe('api lexer', () => {
     const x = parse(
       dedent`
         info (
-          title:  "vivix_tiptap_proxy"
-          desc:   "vivix_tiptap_proxy"
-          author: "luis"
+          title:  "service_proxy"
+          desc:   "service_proxy"
+          author: "jie"
         )
       `
     )
     expect(x).deep.eq({
-      info: { title: 'vivix_tiptap_proxy', desc: 'vivix_tiptap_proxy', author: 'luis' },
+      info: { title: 'service_proxy', desc: 'service_proxy', author: 'jie' },
     })
   })
 
