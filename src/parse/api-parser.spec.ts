@@ -38,19 +38,17 @@ describe('api lexer', () => {
       `
     )
     expect(x).deep.eq({
-      messages: [
-        {
-          UserInfo: {
-            fields: [
-              { name: 'id', remark: 'json:"id"', type: 'int64' },
-              { name: 'nickname', remark: 'json:"nickname"', type: 'string' },
-              { name: 'email', remark: 'json:"email"', type: 'string' },
-              { name: 'profileImageUrl', remark: 'json:"profileImageUrl"', type: 'string' },
-              { name: 'loginType', remark: 'json:"loginType"', type: 'int' },
-            ],
-          },
+      messages: {
+        UserInfo: {
+          fields: [
+            { name: 'id', remark: 'json:"id"', type: 'int64' },
+            { name: 'nickname', remark: 'json:"nickname"', type: 'string' },
+            { name: 'email', remark: 'json:"email"', type: 'string' },
+            { name: 'profileImageUrl', remark: 'json:"profileImageUrl"', type: 'string' },
+            { name: 'loginType', remark: 'json:"loginType"', type: 'int' },
+          ],
         },
-      ],
+      },
     })
   })
 
@@ -66,27 +64,24 @@ describe('api lexer', () => {
             userInfo   UserInfo \`json:"userInfo"\`
             isRegister bool     \`json:"isRegister"\`
           }
-	        // OssCallbackRes  {}
+	        OssCallbackRes  {}
         )
       `
     )
     expect(x).deep.eq({
-      messages: [
-        {
-          GoogleLoginReq: {
-            fields: [{ name: 'code', remark: `json:"code"`, type: 'string' }],
-          },
+      messages: {
+        GoogleLoginReq: {
+          fields: [{ name: 'code', remark: `json:"code"`, type: 'string' }],
         },
-        {
-          GoogleLoginRes: {
-            fields: [
-              { name: 'token', remark: `json:"token"`, type: 'string' },
-              { name: 'userInfo', remark: `json:"userInfo"`, type: 'UserInfo' },
-              { name: 'isRegister', remark: `json:"isRegister"`, type: 'bool' },
-            ],
-          },
+        GoogleLoginRes: {
+          fields: [
+            { name: 'token', remark: `json:"token"`, type: 'string' },
+            { name: 'userInfo', remark: `json:"userInfo"`, type: 'UserInfo' },
+            { name: 'isRegister', remark: `json:"isRegister"`, type: 'bool' },
+          ],
         },
-      ],
+        OssCallbackRes: { fields: [] },
+      },
     })
   })
 })

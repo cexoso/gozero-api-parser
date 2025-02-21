@@ -146,9 +146,10 @@ class ApiToAstVisitor extends ApiVisitor {
   }
   typeDefinition(ctx: any) {
     return {
-      messages: ctx.messageDefinition.map((message: any) => {
-        return this.visit(message)
-      }),
+      messages: ctx.messageDefinition.reduce((acc: Record<string, any>, message: any) => {
+        const m = this.visit(message)
+        return Object.assign(acc, m)
+      }, {}),
     }
   }
 }
