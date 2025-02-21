@@ -21,6 +21,7 @@ import {
   RBrackets,
 } from '../tokens'
 import { tokenize } from '../lexer/lexer'
+import map from 'lodash/map'
 
 export class ApiParser extends CstParser {
   constructor() {
@@ -173,6 +174,36 @@ const parser = new ApiParser()
 // 创建一个访问者
 const ApiVisitor = parser.getBaseCstVisitorConstructor()
 
+interface ServiceDefinition {
+  name: string
+  decorator: Decorator[]
+  methods: Method[]
+}
+interface Decorator {
+  name: string
+  args: Record<string, any> | string
+}
+interface Request {
+  typeName: string
+}
+interface Response {
+  typeName: string
+}
+interface FieldType {
+  typeName: string
+  isArray: boolean
+}
+
+interface Method {
+  method: string
+  url: string
+  request: Request
+  response: Response
+  decorator: Decorator
+}
+
+function mergeService() {}
+
 class ApiToAstVisitor extends ApiVisitor {
   constructor() {
     super()
@@ -244,16 +275,16 @@ class ApiToAstVisitor extends ApiVisitor {
       }, {}),
     }
   }
-  serviceDefinition(ctx: any) {
-    const methods = ctx.methodDefinition?.map((method: any) => this.visit(method)) ?? []
+  serviceDefinition(ctx: any): ServiceDefinition {
+    const methods = map(ctx.methodDefinition, (method: any) => this.visit(method))
     const name = ctx.Identifier[0].image
     return {
-      decorator: ctx.decorator?.map((decorator: any) => this.visit(decorator)) ?? [],
+      decorator: map(ctx.decorator, (decorator) => this.visit(decorator)),
       name,
       methods,
     }
   }
-  decorator(ctx: any) {
+  decorator(ctx: any): Decorator {
     const name = ctx.Identifier[0].image
     const arg = ctx.Identifier[1]
     const args = arg ? arg.image : this.visit(ctx.infoItem)
@@ -263,7 +294,7 @@ class ApiToAstVisitor extends ApiVisitor {
       args,
     }
   }
-  methodDefinition(ctx: any) {
+  methodDefinition(ctx: any): Method {
     const method = ctx.Identifier[0].image
     const url = ctx.UrlPath[0].image
     return {
@@ -274,19 +305,19 @@ class ApiToAstVisitor extends ApiVisitor {
       decorator: ctx.decorator ? this.visit(ctx.decorator) : undefined,
     }
   }
-  Request(ctx: any) {
+  Request(ctx: any): Request {
     const typeName = ctx.Identifier[0].image
     return {
       typeName,
     }
   }
-  Response(ctx: any) {
+  Response(ctx: any): Response {
     const typeName = ctx.Identifier[0].image
     return {
       typeName,
     }
   }
-  fieldType(ctx: any) {
+  fieldType(ctx: any): FieldType {
     const typeName = ctx.Identifier[0].image
     const isArray = Boolean(ctx.LBrackets)
     return {
