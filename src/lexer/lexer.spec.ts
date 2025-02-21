@@ -1,9 +1,14 @@
 import { describe, it } from 'vitest'
 import { tokenize } from './lexer'
-import {} from 'fs'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
-describe('a', () => {
-  it('it', () => {
-    // tokenize()
+const normal = readFileSync(join(__dirname, '../datas/normal.api'), {
+  encoding: 'utf8',
+})
+describe('api lexer', () => {
+  it('normal', () => {
+    const x = tokenize(normal)
+    console.log('debugger 🐛 x', x)
   })
 })
