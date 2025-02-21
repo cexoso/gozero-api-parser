@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { tokenize } from './lexer'
 import dedent from 'ts-dedent'
 
@@ -16,5 +16,17 @@ describe('api lexer', () => {
         )
       `
     )
+  })
+  it('filed', () => {
+    const x = tokenize(
+      dedent`
+        type (
+          UserInfo {
+		        id              int64  \`json:"id"\`
+          }
+        )
+      `
+    )
+    expect(x).lengthOf(9)
   })
 })

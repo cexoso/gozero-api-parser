@@ -4,11 +4,15 @@ import {
   Equals,
   Identifier,
   InfoKeyword,
+  LCurly,
   LParen,
+  RCurly,
   RParen,
   StringLiteral,
   SyntaxKeyword,
+  TypeKeyword,
   allTokens,
+  RawString,
 } from '../tokens'
 import { tokenize } from '../lexer/lexer'
 
@@ -23,6 +27,7 @@ export class ApiParser extends CstParser {
         $.OR([
           { ALT: () => $.SUBRULE($['syntaxDeclaration']) },
           { ALT: () => $.SUBRULE($['infoDeclaration']) },
+          { ALT: () => $.SUBRULE($['typeDefinition']) },
         ])
       })
     })
@@ -48,6 +53,31 @@ export class ApiParser extends CstParser {
       $.CONSUME(StringLiteral)
     })
 
+    $.RULE('typeDefinition', () => {
+      $.CONSUME(TypeKeyword)
+      $.CONSUME(LParen)
+      $.MANY(() => {
+        $.SUBRULE($['messageDefinition'])
+      })
+      $.CONSUME(RParen)
+    })
+    $.RULE('fieldDefinition', () => {
+      $.CONSUME(Identifier)
+      $.CONSUME2(Identifier)
+      $.CONSUME2(RawString)
+    })
+
+    $.RULE('messageDefinition', () => {
+      $.CONSUME(Identifier)
+      $.CONSUME(LCurly)
+      $.OPTION(() => {
+        $.MANY(() => {
+          $.SUBRULE($['fieldDefinition'])
+        })
+      })
+      $.CONSUME(RCurly)
+    })
+
     this.performSelfAnalysis()
   }
 }
@@ -70,6 +100,9 @@ class ApiToAstVisitor extends ApiVisitor {
     }
     if (ctx.infoDeclaration) {
       Object.assign(result, this.visit(ctx.infoDeclaration[0]))
+    }
+    if (ctx.typeDefinition) {
+      Object.assign(result, this.visit(ctx.typeDefinition[0]))
     }
     // 处理其他可能的顶级声明
     return result
@@ -95,6 +128,28 @@ class ApiToAstVisitor extends ApiVisitor {
     const key = ctx.Identifier[0].image
     const value = ctx.StringLiteral[0].image.slice(1, -1) // 移除引号
     return { [key]: value }
+  }
+  fieldDefinition(ctx: any) {
+    return {
+      name: ctx.Identifier[0].image,
+      type: ctx.Identifier[1].image,
+      remark: ctx.RawString[0].image.slice(1, -1),
+    }
+  }
+  messageDefinition(ctx: any) {
+    const key = ctx.Identifier[0].image
+    return {
+      [key]: {
+        fields: ctx.fieldDefinition.map((field: any) => this.visit(field)),
+      },
+    }
+  }
+  typeDefinition(ctx: any) {
+    return {
+      messages: ctx.messageDefinition.map((message: any) => {
+        return this.visit(message)
+      }),
+    }
   }
 }
 

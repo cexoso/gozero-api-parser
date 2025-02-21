@@ -22,4 +22,70 @@ describe('api lexer', () => {
       info: { title: 'vivix_tiptap_proxy', desc: 'vivix_tiptap_proxy', author: 'luis' },
     })
   })
+
+  it('filed', () => {
+    const x = parse(
+      dedent`
+        type (
+          UserInfo {
+            id              int64  \`json:"id"\`
+            nickname        string \`json:"nickname"\`
+            email           string \`json:"email"\`
+            profileImageUrl string \`json:"profileImageUrl"\`
+            loginType       int    \`json:"loginType"\`
+          }
+        )
+      `
+    )
+    expect(x).deep.eq({
+      messages: [
+        {
+          UserInfo: {
+            fields: [
+              { name: 'id', remark: 'json:"id"', type: 'int64' },
+              { name: 'nickname', remark: 'json:"nickname"', type: 'string' },
+              { name: 'email', remark: 'json:"email"', type: 'string' },
+              { name: 'profileImageUrl', remark: 'json:"profileImageUrl"', type: 'string' },
+              { name: 'loginType', remark: 'json:"loginType"', type: 'int' },
+            ],
+          },
+        },
+      ],
+    })
+  })
+
+  it('fileds', () => {
+    const x = parse(
+      dedent`
+        type (
+          GoogleLoginReq {
+            code string \`json:"code"\`
+          }
+          GoogleLoginRes {
+            token      string   \`json:"token"\`
+            userInfo   UserInfo \`json:"userInfo"\`
+            isRegister bool     \`json:"isRegister"\`
+          }
+        )
+      `
+    )
+    expect(x).deep.eq({
+      messages: [
+        {
+          GoogleLoginReq: {
+            fields: [{ name: 'code', remark: `json:"code"`, type: 'string' }],
+          },
+        },
+        {
+          GoogleLoginRes: {
+            fields: [
+              { name: 'token', remark: `json:"token"`, type: 'string' },
+              { name: 'userInfo', remark: `json:"userInfo"`, type: 'UserInfo' },
+              { name: 'isRegister', remark: `json:"isRegister"`, type: 'bool' },
+            ],
+          },
+        },
+      ],
+    })
+  })
 })

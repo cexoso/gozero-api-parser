@@ -1,12 +1,10 @@
 import { Lexer, createToken } from 'chevrotain'
 
-// 定义 syntax 关键字的 token
 export const SyntaxKeyword = createToken({ name: 'SyntaxKeyword', pattern: /syntax/ })
+export const TypeKeyword = createToken({ name: 'TypeKeyword', pattern: /type/ })
 
-// 定义等号的 token
 export const Equals = createToken({ name: 'Equals', pattern: /=/ })
 
-// 定义字符串的 token (用于 "v1")
 export const StringLiteral = createToken({
   name: 'StringLiteral',
   pattern: /"(?:[^\\"]|\\(?:[bfnrtv"\\/]|u[0-9a-fA-F]{4}))*"/,
@@ -19,17 +17,25 @@ export const WhiteSpace = createToken({
   group: Lexer.SKIPPED,
 })
 
-// 新的 Token
 export const InfoKeyword = createToken({ name: 'InfoKeyword', pattern: /info/ })
 export const Identifier = createToken({ name: 'Identifier', pattern: /[a-zA-Z_][a-zA-Z0-9_]*/ })
 export const LParen = createToken({ name: 'LParen', pattern: /\(/ })
 export const RParen = createToken({ name: 'RParen', pattern: /\)/ })
 export const Colon = createToken({ name: 'Colon', pattern: /:/ })
 
+export const LCurly = createToken({ name: 'LCurly', pattern: /{/ })
+export const RCurly = createToken({ name: 'RCurly', pattern: /}/ })
+// 新增 RawString token 来匹配原始字符串
+export const RawString = createToken({
+  name: 'RawString',
+  pattern: /`[^`]*`/,
+})
+
 // 创建词法分析器
 export const allTokens = [
   WhiteSpace, // 注意：空白字符 token 通常应该放在最前面
   SyntaxKeyword,
+  TypeKeyword,
   Equals,
   StringLiteral,
   InfoKeyword,
@@ -37,4 +43,17 @@ export const allTokens = [
   LParen,
   RParen,
   Colon,
+  LCurly,
+  RCurly,
+  RawString,
 ]
+
+// $.RULE('fieldDefinition', () => {
+//   $.CONSUME(Identifier)
+//   $.CONSUME2(Identifier)
+//   $.OPTION(() => {
+//     $.CONSUME(BackTick)
+//     $.CONSUME(StringLiteral)
+//     $.CONSUME2(BackTick)
+//   })
+// })
