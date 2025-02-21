@@ -29,4 +29,29 @@ describe('api lexer', () => {
     )
     expect(x).lengthOf(9)
   })
+  it('service', () => {
+    const x = tokenize(
+      dedent`
+        @server (
+          group: "user"
+        )
+        service proxy_api {
+          @handler GoogleLoginHandler
+          post /user/googleLogin (GoogleLoginReq) returns (GoogleLoginRes)
+        }
+      `
+    )
+    expect(x).lengthOf(23)
+  })
+
+  it('decorator', () => {
+    const x = tokenize(
+      dedent`
+        @server (
+          group: "user"
+        )
+      `
+    )
+    expect(x).lengthOf(7)
+  })
 })

@@ -45,10 +45,22 @@ export const MultiLineComment = createToken({
   group: Lexer.SKIPPED,
 })
 
+// 新的 Token
+export const At = createToken({ name: 'At', pattern: /@/ })
+export const ServiceKeyword = createToken({ name: 'ServiceKeyword', pattern: /service/ })
+export const ReturnsKeyword = createToken({ name: 'ReturnsKeyword', pattern: /returns/ })
+// 新的 UrlPath token
+export const UrlPath = createToken({
+  name: 'UrlPath',
+  pattern: /\/[a-zA-Z0-9_\-\/]+/,
+})
+
 // 创建词法分析器
 export const allTokens = [
   WhiteSpace, // 注意：空白字符 token 通常应该放在最前面
   SyntaxKeyword,
+  ServiceKeyword,
+  ReturnsKeyword,
   TypeKeyword,
   Equals,
   StringLiteral,
@@ -62,4 +74,6 @@ export const allTokens = [
   RawString,
   MultiLineComment,
   SingleLineComment,
+  At,
+  UrlPath,
 ]

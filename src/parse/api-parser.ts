@@ -1,5 +1,9 @@
 import { CstParser } from 'chevrotain'
 import {
+  At,
+  ReturnsKeyword,
+  UrlPath,
+  ServiceKeyword,
   Colon,
   Equals,
   Identifier,
@@ -28,6 +32,7 @@ export class ApiParser extends CstParser {
           { ALT: () => $.SUBRULE($['syntaxDeclaration']) },
           { ALT: () => $.SUBRULE($['infoDeclaration']) },
           { ALT: () => $.SUBRULE($['typeDefinition']) },
+          { ALT: () => $.SUBRULE($['serviceDefinition']) },
         ])
       })
     })
@@ -78,6 +83,71 @@ export class ApiParser extends CstParser {
       $.CONSUME(RCurly)
     })
 
+    $.RULE('decorator', () => {
+      $.CONSUME(At)
+      $.CONSUME(Identifier)
+      $.OPTION(() => {
+        $.OR([
+          {
+            ALT: () => {
+              $.CONSUME(LParen)
+              $.MANY(() => {
+                $.SUBRULE($['infoItem'])
+              })
+              $.CONSUME(RParen)
+            },
+          },
+          {
+            ALT: () => {
+              $.CONSUME2(Identifier)
+            },
+          },
+        ])
+      })
+    })
+
+    $.RULE('Request', () => {
+      $.CONSUME(LParen)
+      $.CONSUME(Identifier)
+      $.CONSUME(RParen)
+    })
+
+    $.RULE('Response', () => {
+      // 这种语法真的不好猜
+      // (GoogleLoginReq) returns (GoogleLoginRes)
+      $.CONSUME(LParen)
+      $.CONSUME(Identifier)
+      $.CONSUME(RParen)
+    })
+
+    $.RULE('methodDefinition', () => {
+      $.OPTION(() => {
+        $.MANY(() => {
+          $.SUBRULE($['decorator'])
+        })
+      })
+      $.CONSUME(Identifier)
+      $.CONSUME(UrlPath)
+      $.SUBRULE($['Request'])
+      $.CONSUME(ReturnsKeyword)
+      $.SUBRULE($['Response'])
+    })
+
+    $.RULE('serviceDefinition', () => {
+      $.OPTION(() => {
+        $.MANY(() => {
+          $.SUBRULE($['decorator'])
+        })
+      })
+      $.CONSUME(ServiceKeyword)
+      $.CONSUME(Identifier)
+      $.CONSUME(LCurly)
+      $.OPTION2(() => {
+        $.SUBRULE2($['methodDefinition'])
+      })
+      $.CONSUME(RCurly)
+    })
+
     this.performSelfAnalysis()
   }
 }
@@ -103,6 +173,9 @@ class ApiToAstVisitor extends ApiVisitor {
     }
     if (ctx.typeDefinition) {
       Object.assign(result, this.visit(ctx.typeDefinition[0]))
+    }
+    if (ctx.serviceDefinition) {
+      Object.assign(result, this.visit(ctx.serviceDefinition[0]))
     }
     // 处理其他可能的顶级声明
     return result
@@ -150,6 +223,48 @@ class ApiToAstVisitor extends ApiVisitor {
         const m = this.visit(message)
         return Object.assign(acc, m)
       }, {}),
+    }
+  }
+  serviceDefinition(ctx: any) {
+    const methods = ctx.methodDefinition.reduce((acc: Record<string, any>, method: any) => {
+      const m = this.visit(method)
+      return Object.assign(acc, m)
+    }, {})
+    const name = ctx.Identifier[0].image
+    return {
+      decorator: ctx.decorator?.map((decorator: any) => this.visit(decorator)) ?? [],
+      name,
+      methods,
+    }
+  }
+  decorator(ctx: any) {
+    const name = ctx.Identifier[0].image
+    return {
+      name,
+      // TODO: 兼容 @server xxx 形式的装饰器
+      args: this.visit(ctx.infoItem),
+    }
+  }
+  methodDefinition(ctx: any) {
+    const method = ctx.Identifier[0].image
+    const url = ctx.UrlPath[0].image
+    return {
+      method: method.toUpperCase(),
+      url,
+      request: this.visit(ctx.Request),
+      response: this.visit(ctx.Response),
+    }
+  }
+  Request(ctx: any) {
+    const typeName = ctx.Identifier[0].image
+    return {
+      typeName,
+    }
+  }
+  Response(ctx: any) {
+    const typeName = ctx.Identifier[0].image
+    return {
+      typeName,
     }
   }
 }

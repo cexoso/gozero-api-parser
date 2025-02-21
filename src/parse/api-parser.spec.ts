@@ -84,4 +84,38 @@ describe('api lexer', () => {
       },
     })
   })
+  it('service definition', () => {
+    const x = parse(
+      dedent`
+        @server (
+          group: "user"
+        )
+        service proxy_api {
+          @handler GoogleLoginHandler
+          post /user/googleLogin (GoogleLoginReq) returns (GoogleLoginRes)
+        }
+      `
+    )
+    expect(x).deep.eq({
+      decorator: [
+        {
+          args: {
+            group: 'user',
+          },
+          name: 'server',
+        },
+      ],
+      methods: {
+        method: 'POST',
+        request: {
+          typeName: 'GoogleLoginReq',
+        },
+        response: {
+          typeName: 'GoogleLoginRes',
+        },
+        url: '/user/googleLogin',
+      },
+      name: 'proxy_api',
+    })
+  })
 })
