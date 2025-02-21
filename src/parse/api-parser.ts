@@ -55,7 +55,8 @@ export class ApiParser extends CstParser {
     $.RULE('infoItem', () => {
       $.CONSUME(Identifier)
       $.CONSUME(Colon)
-      $.CONSUME(StringLiteral)
+      // TODO 需要进一步定义值类型，即可能是基础类型，也可以是变量或者字面量，工作量还挺大的
+      $.OR([{ ALT: () => $.CONSUME2(Identifier) }, { ALT: () => $.CONSUME(StringLiteral) }])
     })
 
     $.RULE('typeDefinition', () => {

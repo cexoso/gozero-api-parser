@@ -84,7 +84,10 @@ describe('api lexer', () => {
       },
     })
   })
-  it('service definition', () => {
+})
+
+describe('service definition', () => {
+  it('service definition case1', () => {
     const x = parse(
       dedent`
         @server (
@@ -114,6 +117,42 @@ describe('api lexer', () => {
           typeName: 'GoogleLoginRes',
         },
         url: '/user/googleLogin',
+      },
+      name: 'proxy_api',
+    })
+  })
+
+  it('service definition case2', () => {
+    const x = parse(
+      dedent`
+        @server (
+          group:      "oss"
+          middleware: OssCallbackMiddleware
+        )
+        service proxy_api {
+          @handler OssCallbackHandler
+          post /oss/callback (OssCallbackReq) returns (OssCallbackRes)
+        }
+      `
+    )
+    expect(x).deep.eq({
+      decorator: [
+        {
+          args: {
+            group: 'oss',
+          },
+          name: 'server',
+        },
+      ],
+      methods: {
+        method: 'POST',
+        request: {
+          typeName: 'OssCallbackReq',
+        },
+        response: {
+          typeName: 'OssCallbackRes',
+        },
+        url: '/oss/callback',
       },
       name: 'proxy_api',
     })
