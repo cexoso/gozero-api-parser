@@ -66,6 +66,7 @@ describe('api lexer', () => {
             userInfo   UserInfo \`json:"userInfo"\`
             isRegister bool     \`json:"isRegister"\`
           }
+	        // OssCallbackRes  {}
         )
       `
     )

@@ -31,6 +31,20 @@ export const RawString = createToken({
   pattern: /`[^`]*`/,
 })
 
+// 单行注释 token
+export const SingleLineComment = createToken({
+  name: 'SingleLineComment',
+  pattern: /\/\/[^\n\r]*/,
+  group: Lexer.SKIPPED,
+})
+
+// 多行注释 token
+export const MultiLineComment = createToken({
+  name: 'MultiLineComment',
+  pattern: /\/\*[\s\S]*?\*\//,
+  group: Lexer.SKIPPED,
+})
+
 // 创建词法分析器
 export const allTokens = [
   WhiteSpace, // 注意：空白字符 token 通常应该放在最前面
@@ -46,14 +60,6 @@ export const allTokens = [
   LCurly,
   RCurly,
   RawString,
+  MultiLineComment,
+  SingleLineComment,
 ]
-
-// $.RULE('fieldDefinition', () => {
-//   $.CONSUME(Identifier)
-//   $.CONSUME2(Identifier)
-//   $.OPTION(() => {
-//     $.CONSUME(BackTick)
-//     $.CONSUME(StringLiteral)
-//     $.CONSUME2(BackTick)
-//   })
-// })

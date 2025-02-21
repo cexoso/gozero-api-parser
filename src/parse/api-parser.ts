@@ -140,7 +140,7 @@ class ApiToAstVisitor extends ApiVisitor {
     const key = ctx.Identifier[0].image
     return {
       [key]: {
-        fields: ctx.fieldDefinition.map((field: any) => this.visit(field)),
+        fields: ctx.fieldDefinition?.map((field: any) => this.visit(field)) ?? [],
       },
     }
   }
