@@ -1,5 +1,5 @@
 {
-  "name": "go-zero/parser",
+  "name": "@cexoso/gozero-api-parser",
   "version": "1.0.0",
   "main": "./src/index.ts",
   "publishConfig": {
