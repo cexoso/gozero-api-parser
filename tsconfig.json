@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "experimentalDecorators": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "module": "esnext",
+    "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     /* 构建到服务器端运行，不需要关注 d.ts */
     "declaration": true,
     /* 构建到服务器端运行，不需要 sourcemap，如果你关注报错堆栈，可以打开此项 */
@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     /* Type Checking, 先默认开启严格的校验模式 */
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
