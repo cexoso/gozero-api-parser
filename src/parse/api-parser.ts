@@ -21,7 +21,7 @@ import {
   RBrackets,
 } from '../tokens'
 import { tokenize } from '../lexer/lexer'
-import map from 'lodash/map'
+import { map } from '../utils/map'
 
 export class ApiParser extends CstParser {
   constructor() {
