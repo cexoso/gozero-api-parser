@@ -1,11 +1,20 @@
 {
-  "name": "chevrotain",
+  "name": "go-zero/parser",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "vitest"
+  "main": "./src/index.ts",
+  "publishConfig": {
+    "directory": "dist",
+    "linkDirectory": false
   },
-  "keywords": [],
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc --noEmit && vitest --open && ts-pkg-build build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "go-zero",
+    "api parser"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",
@@ -14,6 +23,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@cexoso/ts-pkg-build": "^0.0.19",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.13.4",
     "ts-dedent": "^2.2.0",
