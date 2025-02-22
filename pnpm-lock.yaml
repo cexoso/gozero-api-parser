@@ -30,6 +30,9 @@ importers:
       ts-dedent:
         specifier: ^2.2.0
         version: 2.2.0
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
       vitest:
         specifier: ^3.0.6
         version: 3.0.6(@types/node@22.13.4)
