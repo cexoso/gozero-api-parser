@@ -348,7 +348,7 @@ class ApiToAstVisitor extends ApiVisitor {
   }
 }
 
-export const parse = (content: string) => {
+export const parse = (content: string): Program => {
   const tokens = tokenize(content)
   const apiParser = new ApiParser()
   apiParser.input = tokens
