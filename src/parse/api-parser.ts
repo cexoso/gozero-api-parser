@@ -202,7 +202,22 @@ interface Method {
   decorator: Decorator
 }
 
-function mergeService() {}
+interface Program {
+  info: Info
+  services: ServiceDefinition[]
+  syntax: string
+  messages: Record<string, Message>
+}
+interface Message {
+  fields: Field[]
+}
+interface Field {
+  name: string
+  type: string
+  isArray: boolean
+  remark: string
+}
+type Info = Record<string, string>
 
 class ApiToAstVisitor extends ApiVisitor {
   constructor() {
@@ -211,7 +226,12 @@ class ApiToAstVisitor extends ApiVisitor {
   }
 
   program(ctx: any) {
-    const result = {}
+    const result: Program = {
+      services: [],
+      syntax: '',
+      messages: {},
+      info: {},
+    }
     if (ctx.syntaxDeclaration) {
       Object.assign(result, this.visit(ctx.syntaxDeclaration[0]))
     }
@@ -219,10 +239,13 @@ class ApiToAstVisitor extends ApiVisitor {
       Object.assign(result, this.visit(ctx.infoDeclaration[0]))
     }
     if (ctx.typeDefinition) {
-      Object.assign(result, this.visit(ctx.typeDefinition[0]))
+      result.messages = ctx.typeDefinition.reduce(
+        (acc: Record<string, any>, type: any) => Object.assign(acc, this.visit(type)),
+        {}
+      )
     }
     if (ctx.serviceDefinition) {
-      Object.assign(result, this.visit(ctx.serviceDefinition[0]))
+      result.services = map(ctx.serviceDefinition, (service) => this.visit(service))
     }
     // 处理其他可能的顶级声明
     return result
@@ -234,7 +257,7 @@ class ApiToAstVisitor extends ApiVisitor {
     }
   }
 
-  infoDeclaration(ctx: any) {
+  infoDeclaration(ctx: any): { info: Info } {
     const info = {}
     if (ctx.infoItem) {
       ctx.infoItem.forEach((item: any) => {
@@ -249,7 +272,7 @@ class ApiToAstVisitor extends ApiVisitor {
     const value = ctx.StringLiteral[0].image.slice(1, -1) // 移除引号
     return { [key]: value }
   }
-  fieldDefinition(ctx: any) {
+  fieldDefinition(ctx: any): Field {
     const typeResult = this.visit(ctx.fieldType)
     const { typeName, isArray } = typeResult
     return {
@@ -259,7 +282,7 @@ class ApiToAstVisitor extends ApiVisitor {
       remark: ctx.RawString[0].image.slice(1, -1),
     }
   }
-  messageDefinition(ctx: any) {
+  messageDefinition(ctx: any): Record<string, Message> {
     const key = ctx.Identifier[0].image
     return {
       [key]: {
@@ -268,12 +291,10 @@ class ApiToAstVisitor extends ApiVisitor {
     }
   }
   typeDefinition(ctx: any) {
-    return {
-      messages: ctx.messageDefinition.reduce((acc: Record<string, any>, message: any) => {
-        const m = this.visit(message)
-        return Object.assign(acc, m)
-      }, {}),
-    }
+    return ctx.messageDefinition.reduce(
+      (acc: Record<string, any>, message: any) => Object.assign(acc, this.visit(message)),
+      {}
+    )
   }
   serviceDefinition(ctx: any): ServiceDefinition {
     const methods = map(ctx.methodDefinition, (method: any) => this.visit(method))

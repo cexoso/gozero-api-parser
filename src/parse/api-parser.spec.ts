@@ -5,6 +5,9 @@ import dedent from 'ts-dedent'
 describe('api lexer', () => {
   it('normal', () => {
     expect(parse(`syntax = "v1"`)).deep.eq({
+      info: {},
+      messages: {},
+      services: [],
       syntax: 'v1',
     })
   })
@@ -20,6 +23,9 @@ describe('api lexer', () => {
     )
     expect(x).deep.eq({
       info: { title: 'service_proxy', desc: 'service_proxy', author: 'jie' },
+      messages: {},
+      services: [],
+      syntax: '',
     })
   })
 
@@ -38,6 +44,9 @@ describe('api lexer', () => {
       `
     )
     expect(x).deep.eq({
+      syntax: '',
+      services: [],
+      info: {},
       messages: {
         UserInfo: {
           fields: [
@@ -69,6 +78,7 @@ describe('api lexer', () => {
       `
     )
     expect(x).deep.eq({
+      syntax: '',
       messages: {
         GoogleLoginReq: {
           fields: [{ name: 'code', remark: `json:"code"`, type: 'string', isArray: false }],
@@ -82,6 +92,8 @@ describe('api lexer', () => {
         },
         OssCallbackRes: { fields: [] },
       },
+      info: {},
+      services: [],
     })
   })
 })
@@ -103,45 +115,52 @@ describe('service definition', () => {
       `
     )
     expect(x).deep.eq({
-      decorator: [
+      syntax: '',
+      messages: {},
+      info: {},
+      services: [
         {
-          args: {
-            group: 'user',
-          },
-          name: 'server',
+          decorator: [
+            {
+              args: {
+                group: 'user',
+              },
+              name: 'server',
+            },
+          ],
+          methods: [
+            {
+              method: 'POST',
+              request: {
+                typeName: 'GoogleLoginReq',
+              },
+              response: {
+                typeName: 'GoogleLoginRes',
+              },
+              url: '/user/googleLogin',
+              decorator: {
+                args: 'GoogleLoginHandler',
+                name: 'handler',
+              },
+            },
+            {
+              method: 'POST',
+              request: {
+                typeName: 'AppleLoginReq',
+              },
+              response: {
+                typeName: 'AppleLoginRes',
+              },
+              decorator: {
+                args: 'AppleLoginHandler',
+                name: 'handler',
+              },
+              url: '/user/appleLogin',
+            },
+          ],
+          name: 'proxy_api',
         },
       ],
-      methods: [
-        {
-          method: 'POST',
-          request: {
-            typeName: 'GoogleLoginReq',
-          },
-          response: {
-            typeName: 'GoogleLoginRes',
-          },
-          url: '/user/googleLogin',
-          decorator: {
-            args: 'GoogleLoginHandler',
-            name: 'handler',
-          },
-        },
-        {
-          method: 'POST',
-          request: {
-            typeName: 'AppleLoginReq',
-          },
-          response: {
-            typeName: 'AppleLoginRes',
-          },
-          decorator: {
-            args: 'AppleLoginHandler',
-            name: 'handler',
-          },
-          url: '/user/appleLogin',
-        },
-      ],
-      name: 'proxy_api',
     })
   })
 
@@ -159,31 +178,38 @@ describe('service definition', () => {
       `
     )
     expect(x).deep.eq({
-      decorator: [
+      info: {},
+      messages: {},
+      syntax: '',
+      services: [
         {
-          args: {
-            group: 'oss',
-          },
-          name: 'server',
+          decorator: [
+            {
+              args: {
+                group: 'oss',
+              },
+              name: 'server',
+            },
+          ],
+          methods: [
+            {
+              method: 'POST',
+              decorator: {
+                args: 'OssCallbackHandler',
+                name: 'handler',
+              },
+              request: {
+                typeName: 'OssCallbackReq',
+              },
+              response: {
+                typeName: 'OssCallbackRes',
+              },
+              url: '/oss/callback',
+            },
+          ],
+          name: 'proxy_api',
         },
       ],
-      methods: [
-        {
-          method: 'POST',
-          decorator: {
-            args: 'OssCallbackHandler',
-            name: 'handler',
-          },
-          request: {
-            typeName: 'OssCallbackReq',
-          },
-          response: {
-            typeName: 'OssCallbackRes',
-          },
-          url: '/oss/callback',
-        },
-      ],
-      name: 'proxy_api',
     })
   })
   it('service definition case3', () => {
@@ -202,29 +228,36 @@ describe('service definition', () => {
     )
 
     expect(x).deep.eq({
-      decorator: [
+      info: {},
+      messages: {},
+      syntax: '',
+      services: [
         {
-          args: {
-            group: 'user',
-          },
-          name: 'server',
+          decorator: [
+            {
+              args: {
+                group: 'user',
+              },
+              name: 'server',
+            },
+          ],
+          methods: [
+            {
+              decorator: {
+                args: 'RegisterHandler',
+                name: 'handler',
+              },
+              method: 'POST',
+              request: undefined,
+              response: {
+                typeName: 'RegisterRes',
+              },
+              url: '/user/register',
+            },
+          ],
+          name: 'server_proxy_api',
         },
       ],
-      methods: [
-        {
-          decorator: {
-            args: 'RegisterHandler',
-            name: 'handler',
-          },
-          method: 'POST',
-          request: undefined,
-          response: {
-            typeName: 'RegisterRes',
-          },
-          url: '/user/register',
-        },
-      ],
-      name: 'server_proxy_api',
     })
   })
 })
