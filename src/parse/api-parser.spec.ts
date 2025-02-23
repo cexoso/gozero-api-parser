@@ -223,6 +223,9 @@ describe('service definition', () => {
         service server_proxy_api {
           @handler RegisterHandler
           post /user/register returns (RegisterRes)
+
+          @handler GetVideoStreamHandler
+          get /video/getVideoStream (GetVideoStreamReq)
         }
       `
     )
@@ -253,6 +256,18 @@ describe('service definition', () => {
                 typeName: 'RegisterRes',
               },
               url: '/user/register',
+            },
+            {
+              decorator: {
+                args: 'GetVideoStreamHandler',
+                name: 'handler',
+              },
+              method: 'GET',
+              request: {
+                typeName: 'GetVideoStreamReq',
+              },
+              response: undefined,
+              url: '/video/getVideoStream',
             },
           ],
           name: 'server_proxy_api',

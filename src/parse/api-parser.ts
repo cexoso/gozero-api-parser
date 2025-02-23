@@ -144,8 +144,10 @@ export class ApiParser extends CstParser {
       $.OPTION2(() => {
         $.SUBRULE($['Request'])
       })
-      $.CONSUME(ReturnsKeyword)
-      $.SUBRULE($['Response'])
+      $.OPTION3(() => {
+        $.CONSUME(ReturnsKeyword)
+        $.SUBRULE($['Response'])
+      })
     })
 
     $.RULE('serviceDefinition', () => {
