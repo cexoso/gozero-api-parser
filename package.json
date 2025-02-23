@@ -1,6 +1,6 @@
 {
   "name": "@cexoso/gozero-api-parser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "module": "./src/index.ts",
   "type": "module",
   "publishConfig": {
@@ -23,7 +23,7 @@
     "chevrotain": "^11.0.3"
   },
   "devDependencies": {
-    "@cexoso/ts-pkg-build": "^0.0.21",
+    "@cexoso/ts-pkg-build": "^0.0.22",
     "@changesets/cli": "^2.28.1",
     "@types/node": "^22.13.4",
     "ts-dedent": "^2.2.0",
