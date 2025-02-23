@@ -11,3 +11,24 @@ go-zero 自己定义了一套 api 语法，[API 规范](https://go-zero.dev/docs
 # 免责声明
 
 我对 golang 语法并不熟悉，并且我也没有完全读明白 [API 规范](https://go-zero.dev/docs/tutorials#service-%E8%AF%AD%E5%8F%A5) 对语法的定义。我只是基于我的理解以及我需要做的事在做解析。
+
+# 安装
+
+```bash
+npm i @cexoso/gozero-api-parser
+```
+
+# 使用
+
+```typescript
+import { join } from 'path'
+import { readFileSync } from 'fs'
+import { parse } from '@cexoso/gozero-api-parser'
+
+const content = readFileSync(join(__dirname, './content.api'), {
+  encoding: 'utf8',
+})
+
+// 这里可以拿到 .api 文件生成的语法树
+const ast = parse(content)
+```
