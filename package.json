@@ -1,15 +1,15 @@
 {
   "name": "@cexoso/gozero-api-parser",
   "version": "1.0.2",
+  "main": "./src/index.ts",
   "module": "./src/index.ts",
-  "type": "module",
   "publishConfig": {
     "directory": "dist",
     "linkDirectory": false
   },
   "scripts": {
     "test": "vitest",
-    "build": "tsc --noEmit && vitest --run && ts-pkg-build build --format ESM",
+    "build": "tsc --noEmit && vitest --run && ts-pkg-build build",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
