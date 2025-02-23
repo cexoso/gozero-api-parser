@@ -12,18 +12,34 @@ type (
 		nickname        string `json:"nickname"`
 		email           string `json:"email"`
 		profileImageUrl string `json:"profileImageUrl"`
-		loginType       int    `json:"loginType"`
+		loginType       int32  `json:"loginType,options:1=Apple,2=Google"`
+	}
+	VideoInfo {
+		id          int64    `json:"id"`
+		author      UserInfo `json:"author"`
+		videoUrl    string   `json:"videoUrl"`
+		status      int32    `json:"status,options:1=Published,2=Private"`
+		praiseCount int32    `json:"praiseCount"`
+		shareCount  int32    `json:"shareCount"`
+		createdAt   int64    `json:"createdAt"`
+		isPraised   bool     `json:"isPraised"`
+	}
+	SubscribeInfo {
+		level    int32 `json:"level"`
+		expireAt int64 `json:"expireAt"`
 	}
 )
 
 type (
 	GoogleLoginReq {
-		code string `json:"code"`
+		code       string `json:"code"`
+		deviceType int32  `json:"deviceType,options:1=IOS,2=Android,3=Web"`
 	}
 	GoogleLoginRes {
-		token      string   `json:"token"`
-		userInfo   UserInfo `json:"userInfo"`
-		isRegister bool     `json:"isRegister"`
+		token         string        `json:"token"`
+		userInfo      UserInfo      `json:"userInfo"`
+		subscribeInfo SubscribeInfo `json:"subscribeInfo"`
+		isRegister    bool          `json:"isRegister"`
 	}
 )
 
@@ -34,15 +50,30 @@ type (
 		email    string `json:"email"`
 	}
 	AppleLoginRes {
-		token      string   `json:"token"`
-		userInfo   UserInfo `json:"userInfo"`
-		isRegister bool     `json:"isRegister"`
+		token         string        `json:"token"`
+		userInfo      UserInfo      `json:"userInfo"`
+		subscribeInfo SubscribeInfo `json:"subscribeInfo"`
+		isRegister    bool          `json:"isRegister"`
 	}
 )
 
 type (
+	RegisterReq {
+		birthYear  int32 `json:"birthYear"`
+		birthMonth int32 `json:"birthMonth"`
+		birthDay   int32 `json:"birthDay"`
+	}
 	RegisterRes {
-		success bool `json:"success"`
+		success bool   `json:"success"`
+		token   string `json:"token"`
+	}
+)
+
+type (
+	GetMyInfoReq  {}
+	GetMyInfoRes {
+		userInfo      UserInfo      `json:"userInfo"`
+		subscribeInfo SubscribeInfo `json:"subscribeInfo"`
 	}
 )
 
@@ -81,9 +112,87 @@ type (
 		uploadId string `json:"uploadId"`
 	}
 	GenerateVideoRes {
-		videoStream []byte `json:"videoStream"`
-		generateId  int64  `json:"generateId"`
-		videoUrl    string `json:"videoUrl"`
+		generateId int64 `json:"generateId"`
+	}
+)
+
+type (
+	GetVideoStreamReq {
+		generateId int64 `form:"generateId"`
+	}
+)
+
+type (
+	PublishVideoReq {
+		generateId int64 `form:"generateId"`
+	}
+	PublishVideoRes {
+		videoId int64 `json:"videoId"`
+	}
+)
+
+type (
+	PraiseVideoReq {
+		videoId int64 `form:"videoId"`
+	}
+	PraiseVideoRes  {}
+)
+
+type (
+	CancelPraiseVideoReq {
+		videoId int64 `form:"videoId"`
+	}
+	CancelPraiseVideoRes  {}
+)
+
+type (
+	ShareVideoReq {
+		videoId int64 `form:"videoId"`
+	}
+	ShareVideoRes  {}
+)
+
+type (
+	GetVideoListReq {
+		lastVideoId int64 `form:"lastVideoId"`
+		pageSize    int32 `form:"pageSize"`
+	}
+	GetVideoListRes {
+		videoList []VideoInfo `json:"videoList"`
+	}
+)
+
+type (
+	GetMyVideoListReq {
+		page     int32 `form:"page"`
+		pageSize int32 `form:"pageSize"`
+	}
+	GetMyVideoListRes {
+		videoList []VideoInfo `json:"videoList"`
+	}
+)
+
+type (
+	GetMyPraiseListReq {
+		page     int32 `form:"page"`
+		pageSize int32 `form:"pageSize"`
+	}
+	GetMyPraiseListRes {
+		videoList []VideoInfo `json:"videoList"`
+	}
+)
+
+type (
+	GetSubscribeInfoReq  {}
+	GetSubscribeInfoRes {
+		subscribeInfo SubscribeInfo `json:"subscribeInfo"`
+	}
+)
+
+type (
+	SubscribeReq  {}
+	SubscribeRes {
+		subscribeInfo SubscribeInfo `json:"subscribeInfo"`
 	}
 )
 
@@ -104,7 +213,10 @@ service server_proxy_api {
 )
 service server_proxy_api {
 	@handler RegisterHandler
-	post /user/register returns (RegisterRes)
+	post /user/register (RegisterReq) returns (RegisterRes)
+
+	@handler GetMyInfoHandler
+	post /user/getMyInfo (GetMyInfoReq) returns (GetMyInfoRes)
 }
 
 @server (
@@ -126,4 +238,41 @@ service server_proxy_api {
 
 	@handler GenerateVideoHandler
 	post /video/generateVideo (GenerateVideoReq) returns (GenerateVideoRes)
+
+	@handler GetVideoStreamHandler
+	get /video/getVideoStream (GetVideoStreamReq)
+
+	@handler PublishVideoHandler
+	post /video/publishVideo (PublishVideoReq) returns (PublishVideoRes)
+
+	@handler GetVideoListHandler
+	post /video/getVideoList (GetVideoListReq) returns (GetVideoListRes)
+
+	@handler GetMyVideoListHandler
+	post /video/getMyVideoList (GetMyVideoListReq) returns (GetMyVideoListRes)
+
+	@handler GetMyPraiseListHandler
+	post /video/getMyPraiseList (GetMyPraiseListReq) returns (GetMyPraiseListRes)
+
+	@handler PraiseVideoHandler
+	post /video/praiseVideo (PraiseVideoReq) returns (PraiseVideoRes)
+
+	@handler CancelPraiseVideoHandler
+	post /video/cancelPraiseVideo (CancelPraiseVideoReq) returns (CancelPraiseVideoRes)
+
+	@handler ShareVideoHandler
+	post /video/shareVideo (ShareVideoReq) returns (ShareVideoRes)
 }
+
+@server (
+	group:      "sub"
+	middleware: JwtAgentMiddleware
+)
+service server_proxy_api {
+	@handler GetSubscribeInfoHandler
+	post /sub/getSubscribeInfo (GetSubscribeInfoReq) returns (GetSubscribeInfoRes)
+
+	@handler SubscribeHandler
+	post /sub/subscribe (SubscribeReq) returns (SubscribeRes)
+}
+
