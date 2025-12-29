@@ -20,6 +20,7 @@ import {
   LBrackets,
   RBrackets,
   Star,
+  TimeoutValue,
 } from '../tokens'
 import { tokenize } from '../lexer/lexer'
 import { map } from '../utils/map'
@@ -60,7 +61,12 @@ export class ApiParser extends CstParser {
       $.CONSUME(Identifier)
       $.CONSUME(Colon)
       // TODO 需要进一步定义值类型，即可能是基础类型，也可以是变量或者字面量，工作量还挺大的
-      $.OR([{ ALT: () => $.CONSUME2(Identifier) }, { ALT: () => $.CONSUME(StringLiteral) }])
+      $.OR([
+        { ALT: () => $.CONSUME2(Identifier) },
+        { ALT: () => $.CONSUME(StringLiteral) },
+        { ALT: () => $.CONSUME(TimeoutValue) },
+        { ALT: () => $.CONSUME(UrlPath) },
+      ])
     })
 
     $.RULE('typeDefinition', () => {
@@ -225,7 +231,7 @@ interface Field {
 }
 type Info = Record<string, string>
 
-class ApiToAstVisitor extends ApiVisitor {
+export class ApiToAstVisitor extends ApiVisitor {
   constructor() {
     super()
     this.validateVisitor()
@@ -275,7 +281,11 @@ class ApiToAstVisitor extends ApiVisitor {
 
   infoItem(ctx: any) {
     const key = ctx.Identifier[0].image
-    const value = ctx.StringLiteral[0].image.slice(1, -1) // 移除引号
+    const value =
+      ctx.StringLiteral?.[0].image.slice(1, -1) ??
+      ctx.UrlPath?.[0].image ??
+      ctx.TimeoutValue?.[0].image ??
+      ctx.Identifier[1]?.image
     return { [key]: value }
   }
   fieldDefinition(ctx: any): Field {
@@ -314,7 +324,9 @@ class ApiToAstVisitor extends ApiVisitor {
   decorator(ctx: any): Decorator {
     const name = ctx.Identifier[0].image
     const arg = ctx.Identifier[1]
-    const args = arg ? arg.image : this.visit(ctx.infoItem)
+    const visit = this.visit.bind(this)
+    const infoItem: any[] = ctx.infoItem ?? []
+    const args = arg ? arg.image : infoItem.reduce((acc: any, item: any) => ({ ...acc, ...visit(item) }), {})
 
     return {
       name,

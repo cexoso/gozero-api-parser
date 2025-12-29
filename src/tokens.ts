@@ -30,6 +30,17 @@ export const RBrackets = createToken({ name: 'RBrackets', pattern: /]/ })
 
 export const Star = createToken({ name: 'star', pattern: /\*/ })
 // 超时时间 Token（覆盖 0s、3s、500ms、1m 等 GoZero 合法超时格式）
+export const TimeoutValue = createToken({
+  name: 'TimeoutValue',
+  pattern: /\d+(s|ms|m)/, // 匹配 数字 + 时间单位（s/秒、ms/毫秒、m/分钟），完全兼容 GoZero 超时语法
+})
+
+// export const PathPrefixValue = createToken({
+//   name: 'PathPrefixValue',
+//   // 优化后正则：匹配以 / 开头，后续为 字母/数字/下划线/连字符/子路径（/），且不以 // 或 /* 开头
+//   pattern: /\/(?!\/|\*)([a-zA-Z0-9_\/-]+)/,
+// })
+
 // 新增 RawString token 来匹配原始字符串
 export const RawString = createToken({
   name: 'RawString',
@@ -77,6 +88,8 @@ export const allTokens = [
   LCurly,
   LBrackets,
   RBrackets,
+  Star,
+  TimeoutValue,
   RCurly,
   RawString,
   MultiLineComment,

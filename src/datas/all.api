@@ -267,6 +267,8 @@ service server_proxy_api {
 @server (
 	group:      "sub"
 	middleware: JwtAgentMiddleware
+	prefix:  /internal/tool
+	timeout: 0s
 )
 service server_proxy_api {
 	@handler GetSubscribeInfoHandler

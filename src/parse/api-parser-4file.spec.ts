@@ -629,6 +629,7 @@ describe('parser a file', () => {
               {
                 "args": {
                   "group": "user",
+                  "middleware": "JwtAgentMiddleware",
                 },
                 "name": "server",
               },
@@ -670,6 +671,7 @@ describe('parser a file', () => {
               {
                 "args": {
                   "group": "oss",
+                  "middleware": "OssCallbackMiddleware",
                 },
                 "name": "server",
               },
@@ -697,6 +699,7 @@ describe('parser a file', () => {
               {
                 "args": {
                   "group": "video",
+                  "middleware": "JwtAgentMiddleware",
                 },
                 "name": "server",
               },
@@ -848,6 +851,9 @@ describe('parser a file', () => {
               {
                 "args": {
                   "group": "sub",
+                  "middleware": "JwtAgentMiddleware",
+                  "prefix": "/internal/tool",
+                  "timeout": "0s",
                 },
                 "name": "server",
               },

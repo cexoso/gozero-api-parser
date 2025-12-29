@@ -115,9 +115,8 @@ describe('service definition', () => {
       `
     )
     expect(x).deep.eq({
-      syntax: '',
-      messages: {},
       info: {},
+      messages: {},
       services: [
         {
           decorator: [
@@ -130,6 +129,10 @@ describe('service definition', () => {
           ],
           methods: [
             {
+              decorator: {
+                args: 'GoogleLoginHandler',
+                name: 'handler',
+              },
               method: 'POST',
               request: {
                 typeName: 'GoogleLoginReq',
@@ -138,12 +141,12 @@ describe('service definition', () => {
                 typeName: 'GoogleLoginRes',
               },
               url: '/user/googleLogin',
-              decorator: {
-                args: 'GoogleLoginHandler',
-                name: 'handler',
-              },
             },
             {
+              decorator: {
+                args: 'AppleLoginHandler',
+                name: 'handler',
+              },
               method: 'POST',
               request: {
                 typeName: 'AppleLoginReq',
@@ -151,65 +154,13 @@ describe('service definition', () => {
               response: {
                 typeName: 'AppleLoginRes',
               },
-              decorator: {
-                args: 'AppleLoginHandler',
-                name: 'handler',
-              },
               url: '/user/appleLogin',
             },
           ],
           name: 'proxy_api',
         },
       ],
-    })
-  })
-
-  it('service definition case2', () => {
-    const x = parse(
-      dedent`
-        @server (
-          group:      "oss"
-          middleware: OssCallbackMiddleware
-        )
-        service proxy_api {
-          @handler OssCallbackHandler
-          post /oss/callback (OssCallbackReq) returns (OssCallbackRes)
-        }
-      `
-    )
-    expect(x).deep.eq({
-      info: {},
-      messages: {},
       syntax: '',
-      services: [
-        {
-          decorator: [
-            {
-              args: {
-                group: 'oss',
-              },
-              name: 'server',
-            },
-          ],
-          methods: [
-            {
-              method: 'POST',
-              decorator: {
-                args: 'OssCallbackHandler',
-                name: 'handler',
-              },
-              request: {
-                typeName: 'OssCallbackReq',
-              },
-              response: {
-                typeName: 'OssCallbackRes',
-              },
-              url: '/oss/callback',
-            },
-          ],
-          name: 'proxy_api',
-        },
-      ],
     })
   })
   it('service definition case3', () => {
@@ -233,13 +184,13 @@ describe('service definition', () => {
     expect(x).deep.eq({
       info: {},
       messages: {},
-      syntax: '',
       services: [
         {
           decorator: [
             {
               args: {
                 group: 'user',
+                middleware: 'JwtAgentMiddleware',
               },
               name: 'server',
             },
@@ -273,6 +224,7 @@ describe('service definition', () => {
           name: 'server_proxy_api',
         },
       ],
+      syntax: '',
     })
   })
 })
