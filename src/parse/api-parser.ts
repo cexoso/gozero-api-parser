@@ -71,11 +71,22 @@ export class ApiParser extends CstParser {
 
     $.RULE('typeDefinition', () => {
       $.CONSUME(TypeKeyword)
-      $.CONSUME(LParen)
-      $.MANY(() => {
-        $.SUBRULE($['messageDefinition'])
-      })
-      $.CONSUME(RParen)
+      $.OR([
+        {
+          ALT: () => {
+            $.CONSUME(LParen)
+            $.MANY(() => {
+              $.SUBRULE($['messageDefinition'])
+            })
+            $.CONSUME(RParen)
+          },
+        },
+        {
+          ALT: () => {
+            $.SUBRULE2($['messageDefinition'])
+          },
+        },
+      ])
     })
 
     $.RULE('fieldType', () => {

@@ -6,14 +6,16 @@ info (
 	author: "jie"
 )
 
+
+type UserInfo {
+  id              int64  `json:"id"`
+  nickname        string `json:"nickname"`
+  email           string `json:"email"`
+  profileImageUrl string `json:"profileImageUrl"`
+  loginType       int32  `json:"loginType,options:1=Apple,2=Google"`
+}
+
 type (
-	UserInfo {
-		id              int64  `json:"id"`
-		nickname        string `json:"nickname"`
-		email           string `json:"email"`
-		profileImageUrl string `json:"profileImageUrl"`
-		loginType       int32  `json:"loginType,options:1=Apple,2=Google"`
-	}
 	VideoInfo {
 		id          int64    `json:"id"`
 		author      UserInfo `json:"author"`
