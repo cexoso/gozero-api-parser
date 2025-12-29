@@ -19,6 +19,7 @@ import {
   RawString,
   LBrackets,
   RBrackets,
+  Star,
 } from '../tokens'
 import { tokenize } from '../lexer/lexer'
 import { map } from '../utils/map'
@@ -75,6 +76,9 @@ export class ApiParser extends CstParser {
       $.OPTION(() => {
         $.CONSUME(LBrackets)
         $.CONSUME(RBrackets)
+      })
+      $.OPTION2(() => {
+        $.CONSUME(Star)
       })
       $.CONSUME(Identifier)
     })

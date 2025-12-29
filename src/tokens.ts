@@ -27,6 +27,9 @@ export const LCurly = createToken({ name: 'LCurly', pattern: /{/ })
 export const RCurly = createToken({ name: 'RCurly', pattern: /}/ })
 export const LBrackets = createToken({ name: 'LBrackets', pattern: /\[/ })
 export const RBrackets = createToken({ name: 'RBrackets', pattern: /]/ })
+
+export const Star = createToken({ name: 'star', pattern: /\*/ })
+// 超时时间 Token（覆盖 0s、3s、500ms、1m 等 GoZero 合法超时格式）
 // 新增 RawString token 来匹配原始字符串
 export const RawString = createToken({
   name: 'RawString',
