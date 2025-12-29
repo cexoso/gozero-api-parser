@@ -16,7 +16,6 @@ import {
   SyntaxKeyword,
   TypeKeyword,
   allTokens,
-  RawString,
   LBrackets,
   RBrackets,
   Star,
@@ -102,8 +101,10 @@ export class ApiParser extends CstParser {
 
     $.RULE('fieldDefinition', () => {
       $.CONSUME(Identifier)
-      $.SUBRULE($['fieldType'])
-      $.CONSUME2(RawString)
+      $.OPTION(() => {
+        $.SUBRULE($['fieldType'])
+        $.CONSUME2(StringLiteral)
+      })
     })
 
     $.RULE('messageDefinition', () => {
@@ -306,7 +307,7 @@ export class ApiToAstVisitor extends ApiVisitor {
       name: ctx.Identifier[0].image,
       type: typeName,
       isArray: isArray,
-      remark: ctx.RawString[0].image.slice(1, -1),
+      remark: ctx.StringLiteral[0].image.slice(1, -1),
     }
   }
   messageDefinition(ctx: any): Record<string, Message> {

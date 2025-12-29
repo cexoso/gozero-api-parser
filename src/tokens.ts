@@ -7,7 +7,7 @@ export const Equals = createToken({ name: 'Equals', pattern: /=/ })
 
 export const StringLiteral = createToken({
   name: 'StringLiteral',
-  pattern: /"(?:[^\\"]|\\(?:[bfnrtv"\\/]|u[0-9a-fA-F]{4}))*"/,
+  pattern: /"(?:[^\\"]|\\(?:[bfnrtv"\\/]|u[0-9a-fA-F]{4}))*"|`[^`]*`/,
 })
 
 // 定义空白字符的 token (可选,用于忽略空格)
@@ -40,12 +40,6 @@ export const TimeoutValue = createToken({
 //   // 优化后正则：匹配以 / 开头，后续为 字母/数字/下划线/连字符/子路径（/），且不以 // 或 /* 开头
 //   pattern: /\/(?!\/|\*)([a-zA-Z0-9_\/-]+)/,
 // })
-
-// 新增 RawString token 来匹配原始字符串
-export const RawString = createToken({
-  name: 'RawString',
-  pattern: /`[^`]*`/,
-})
 
 // 单行注释 token
 export const SingleLineComment = createToken({
@@ -91,7 +85,6 @@ export const allTokens = [
   Star,
   TimeoutValue,
   RCurly,
-  RawString,
   MultiLineComment,
   SingleLineComment,
   At,
