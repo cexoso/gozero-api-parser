@@ -199,8 +199,8 @@ interface FieldType {
 interface Method {
   method: string
   url: string
-  request: Request
-  response: Response
+  request?: Request
+  response?: Response
   decorator: Decorator
 }
 
